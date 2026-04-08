@@ -49,7 +49,7 @@ resource "aws_security_group" "allow_web_ssh" {
 # 💻 EC2 Instance
 resource "aws_instance" "nextread" {
   ami           = "ami-0f5ee92e2d63afc18"  # Ubuntu (Mumbai region)
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
 
   key_name = aws_key_pair.deployer.key_name
 
