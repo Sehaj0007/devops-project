@@ -33,11 +33,11 @@ pipeline {
                 set /p IP=<ip.txt
                 echo EC2 IP is %IP%
 
-                scp -i jenkins-key deploy.sh ubuntu@%IP%:/home/ubuntu/
-                scp -i jenkins-key Dockerfile ubuntu@%IP%:/home/ubuntu/
-                scp -i jenkins-key index.html ubuntu@%IP%:/home/ubuntu/
+                scp -o StrictHostKeyChecking=no -i jenkins-key deploy.sh ubuntu@%IP%:/home/ubuntu/
+                scp -o StrictHostKeyChecking=no -i jenkins-key Dockerfile ubuntu@%IP%:/home/ubuntu/
+                scp -o StrictHostKeyChecking=no -i jenkins-key index.html ubuntu@%IP%:/home/ubuntu/
 
-                ssh -i jenkins-key ubuntu@%IP% "chmod +x deploy.sh && ./deploy.sh"
+                ssh -o StrictHostKeyChecking=no -i jenkins-key ubuntu@%IP% "chmod +x deploy.sh && ./deploy.sh"
                 '''
             }
         }
