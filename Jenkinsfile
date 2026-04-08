@@ -3,23 +3,42 @@ pipeline {
 
     stages {
 
-        stage('Clone Repo') {
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Terraform Init') {
             steps {
-                bat 'docker build -t nextread-app .'
+                bat 'terraform init'
             }
         }
 
-        stage('Run Container') {
+        stage('Terraform Apply') {
             steps {
-                bat 'docker stop nextread || exit 0'
-                bat 'docker rm nextread || exit 0'
-                bat 'docker run -d -p 8081:80 --name nextread nextread-app'
+                bat 'terraform apply -auto-approve'
+            }
+        }
+
+        stage('Get EC2 IP') {
+            steps {
+                bat 'terraform output -raw public_ip > ip.txt'
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                bat '''
+                set /p IP=<ip.txt
+                echo EC2 IP is %IP%
+
+                scp -i jenkins-key deploy.sh ubuntu@%IP%:/home/ubuntu/
+                scp -i jenkins-key Dockerfile ubuntu@%IP%:/home/ubuntu/
+                scp -i jenkins-key index.html ubuntu@%IP%:/home/ubuntu/
+
+                ssh -i jenkins-key ubuntu@%IP% "chmod +x deploy.sh && ./deploy.sh"
+                '''
             }
         }
     }
