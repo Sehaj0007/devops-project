@@ -42,7 +42,7 @@ pipeline {
                 scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key Dockerfile ubuntu@%IP%:/home/ubuntu/
                 scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key index.html ubuntu@%IP%:/home/ubuntu/
 
-                ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key ubuntu@%IP% "sed -i 's/\r$//' deploy.sh && chmod +x deploy.sh && ./deploy.sh"
+                ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key ubuntu@%IP% "tr -d '\\r' < deploy.sh > fixed.sh && mv fixed.sh deploy.sh && chmod +x deploy.sh && ./deploy.sh"
                 '''
             }
         }
