@@ -1,6 +1,7 @@
 pipeline {
     agent {
         node {
+            label ''
             customWorkspace 'C:\\JenkinsWorkspace\\devops-project'
         }
     }
