@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        node {
+            customWorkspace 'C:\\JenkinsWorkspace\\devops-project'
+        }
+    }
 
     stages {
 
@@ -33,11 +37,11 @@ pipeline {
                 set /p IP=<ip.txt
                 echo EC2 IP is %IP%
 
-                scp -o StrictHostKeyChecking=no -i jenkins-key deploy.sh ubuntu@%IP%:/home/ubuntu/
-                scp -o StrictHostKeyChecking=no -i jenkins-key Dockerfile ubuntu@%IP%:/home/ubuntu/
-                scp -o StrictHostKeyChecking=no -i jenkins-key index.html ubuntu@%IP%:/home/ubuntu/
+                scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key deploy.sh ubuntu@%IP%:/home/ubuntu/
+                scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key Dockerfile ubuntu@%IP%:/home/ubuntu/
+                scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key index.html ubuntu@%IP%:/home/ubuntu/
 
-                ssh -o StrictHostKeyChecking=no -i jenkins-key ubuntu@%IP% "chmod +x deploy.sh && ./deploy.sh"
+                ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i jenkins-key ubuntu@%IP% "chmod +x deploy.sh && ./deploy.sh"
                 '''
             }
         }

@@ -2,15 +2,17 @@ provider "aws" {
   region = "ap-south-1"
 }
 
-# 🔑 Create Key Pair (for SSH access)
+locals {
+  project_name = "nextread"
+}
+
 resource "aws_key_pair" "deployer" {
-  key_name   = "jenkins-key"
+  key_name   = "${local.project_name}-key"
   public_key = file("jenkins-key.pub")
 }
 
-# 🔐 Security Group (allow SSH + HTTP)
 resource "aws_security_group" "allow_web_ssh" {
-  name        = "allow_web_ssh"
+  name_prefix = "${local.project_name}-sg-"
   description = "Allow SSH and HTTP access"
 
   ingress {
@@ -29,9 +31,8 @@ resource "aws_security_group" "allow_web_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Optional (for testing/debug)
   ingress {
-    description = "Custom App Port"
+    description = "App Port"
     from_port   = 8081
     to_port     = 8081
     protocol    = "tcp"
@@ -46,9 +47,8 @@ resource "aws_security_group" "allow_web_ssh" {
   }
 }
 
-# 💻 EC2 Instance
 resource "aws_instance" "nextread" {
-  ami           = "ami-0f5ee92e2d63afc18"  # Ubuntu (Mumbai region)
+  ami           = "ami-0f5ee92e2d63afc18"
   instance_type = "t3.micro"
 
   key_name = aws_key_pair.deployer.key_name
@@ -60,7 +60,6 @@ resource "aws_instance" "nextread" {
   }
 }
 
-# 🌐 Output Public IP
 output "public_ip" {
   value = aws_instance.nextread.public_ip
 }
